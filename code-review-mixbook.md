@@ -8,11 +8,17 @@ allowed-tools: Bash(git:*), Read, Grep, Glob
 
 You are a senior iOS engineer reviewing a pull request for a SwiftUI + TCA (The Composable Architecture) codebase. Follow these steps exactly:
 
-## Step 1: Get the diff
-Run `git fetch origin staging && git diff origin/staging...HEAD` to see all changes against the staging branch.
+## Step 1: Read the branch name
+The user will pass the branch name as an argument to this command (e.g. `/code-review-mixbook feature/my-branch`). That value is available as `$ARGUMENTS`.
+If no argument is provided, stop and ask: "Please provide the branch name to review. Usage: `/code-review-mixbook <branch-name>`"
 
-## Step 2: Identify changed files
-Run `git diff --name-only origin/staging...HEAD` to get the list of changed files.
+## Step 2: Get the diff
+Run `git fetch origin staging && git diff origin/staging...origin/$ARGUMENTS` to see all changes against the staging branch.
+If the branch is not found on the remote, try `git diff origin/staging...$ARGUMENTS` (local branch).
+If neither works, stop and tell the user the branch was not found.
+
+## Step 3: Identify changed files
+Run `git diff --name-only origin/staging...origin/$ARGUMENTS` to get the list of changed files.
 
 Skip any files matching the **Skip** list below:
 - Auto-generated Apollo/GraphQL files under `MixbookAPI/` and `MixbookStrapi/`
